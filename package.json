@@ -1,0 +1,19 @@
+{
+  "name": "lensit",
+  "version": "1.0.0",
+  "description": "LensIt 放大镜标注工具：框选区域 → 跟随鼠标的实时放大镜 → 单击冻结变标记笔 → 右键取消。Electron(前端) + Express(后端) + SQLite(数据库)",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server/index.js",
+    "selftest": "electron . --selftest",
+    "icon": "node tools/gen-icon.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "electron": "44.5.1"
+  }
+}

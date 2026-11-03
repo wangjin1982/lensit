@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>LensIt 框选</title>
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; cursor: crosshair; user-select: none; }
+  #backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .42); }
+  .xline { position: fixed; background: rgba(255, 255, 255, .35); pointer-events: none; }
+  #xv { top: 0; bottom: 0; width: 1px; }
+  #xh { left: 0; right: 0; height: 1px; }
+  #rect { position: fixed; border: 2px solid #3ddcff; box-shadow: 0 0 0 1px rgba(0,0,0,.5); background: rgba(61, 220, 255, .06); display: none; }
+  #tag { position: fixed; background: #3ddcff; color: #000; font: 12px/1 "Segoe UI", "Microsoft YaHei", sans-serif; padding: 5px 8px; border-radius: 3px; display: none; white-space: nowrap; }
+  #hint { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); color: #e8ecf2; background: rgba(12, 14, 18, .8); font: 13px/1 "Segoe UI", "Microsoft YaHei", sans-serif; padding: 10px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,.12); }
+</style>
+</head>
+<body>
+  <div id="backdrop"></div>
+  <div class="xline" id="xv"></div>
+  <div class="xline" id="xh"></div>
+  <div id="rect"></div>
+  <div id="tag"></div>
+  <div id="hint">拖拽框选要放大的区域　·　右键 / Esc 取消</div>
+<script>
+  const rect = document.getElementById('rect');
+  const tag = document.getElementById('tag');
+  const xv = document.getElementById('xv');
+  const xh = document.getElementById('xh');
+  let dragging = false, sx = 0, sy = 0;
+
+  const emit = (ch, payload) => window.lensIt && window.lensIt.send(ch, payload);
+
+  window.addEventListener('contextmenu', e => { e.preventDefault(); emit('select-cancel'); window.close(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') { emit('select-cancel'); window.close(); } });
+
+  window.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    dragging = true; sx = e.clientX; sy = e.clientY;
+    rect.style.display = 'block'; tag.style.display = 'block';
+  });
+
+  window.addEventListener('mousemove', e => {
+    xv.style.left = e.clientX + 'px';
+    xh.style.top = e.clientY + 'px';
+    if (!dragging) return;
+    const x = Math.min(sx, e.clientX), y = Math.min(sy, e.clientY);
+    const w = Math.abs(e.clientX - sx), h = Math.abs(e.clientY - sy);
+    rect.style.left = x + 'px'; rect.style.top = y + 'px';
+    rect.style.width = w + 'px'; rect.style.height = h + 'px';
+    tag.textContent = `${w} × ${h}`;
+    tag.style.left = Math.max(6, x) + 'px';
+    tag.style.top = Math.max(6, y - 30) + 'px';
+  });
+
+  window.addEventListener('mouseup', e => {
+    if (e.button !== 0 || !dragging) return;
+    dragging = false;
+    const x = Math.min(sx, e.clientX), y = Math.min(sy, e.clientY);
+    const w = Math.abs(e.clientX - sx), h = Math.abs(e.clientY - sy);
+    rect.style.display = 'none'; tag.style.display = 'none';
+    if (w >= 16 && h >= 16) {
+      emit('select-done', { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h) });
+      window.close();
+    } else {
+      emit('select-cancel');
+      window.close();
+    }
+  });
+</script>
+</body>
+</html>

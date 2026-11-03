@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>LensIt 放大镜</title>
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; user-select: none; }
+  body.mode-lens { cursor: none; }
+  body.mode-pen  { cursor: crosshair; }
+  #cap { display: none; }
+  canvas { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; }
+  #hud {
+    position: fixed; left: 12px; bottom: 10px; z-index: 10; pointer-events: none;
+    color: #e8ecf2; background: rgba(12, 14, 18, .78); border: 1px solid rgba(255,255,255,.12);
+    font: 12px/1.7 "Segoe UI", "Microsoft YaHei", sans-serif; padding: 8px 12px; border-radius: 6px;
+  }
+  #hud b { color: #3ddcff; font-weight: 600; }
+</style>
+</head>
+<body class="mode-lens">
+  <video id="cap" muted></video>
+  <canvas id="bg"></canvas>
+  <canvas id="ink"></canvas>
+  <div id="hud"></div>
+<script src="overlay.js"></script>
+</body>
+</html>
